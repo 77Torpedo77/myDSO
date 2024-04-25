@@ -34,6 +34,9 @@
 #include "util/settings.h"
 
 #include "util/pclSetting.h"
+
+#include <pcl/point_types.h>
+#include <pcl/registration/icp.h>
 namespace dso
 {
 
@@ -95,7 +98,8 @@ public:
 
 
 
-        virtual void publishKeyframes(std::vector<FrameHessian*> &frames, bool final, CalibHessian* HCalib) override
+        virtual void
+        publishKeyframes(std::vector<FrameHessian *> &frames, bool final, CalibHessian *HCalib, int mode) override
         {
 //            std::string thread_id_str = boost::to_string(boost::this_thread::get_id());
 //            std::cout<<thread_id_str+"//////////////////sample_public///////////////////"<<std::endl;
@@ -165,7 +169,59 @@ public:
                     }
                 }
             }
+            if (mode==1)
+            {
+                pcl::PointCloud<pcl::PointXYZ>::Ptr source_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+                pcl::PointCloud<pcl::PointXYZ>::Ptr target_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+                pcl::PointXYZ point;
+                for (FrameHessian* f : frames)
+                {
+                    if (f->shell->poseValid)
+                    {
+                        auto const& m = f->shell->camToWorld.matrix3x4();
 
+                        // use only marginalized points.
+                        auto const& points = f->pointHessiansMarginalized;
+
+                        for (auto const* p : points)
+                        {
+                            float depth = 1.0f / p->idepth;
+                            auto const x = (p->u * fxi + cxi) * depth;
+                            auto const y = (p->v * fyi + cyi) * depth;
+                            auto const z = depth * (1 + 2 * fxi);
+
+                            Eigen::Vector4d camPoint(x, y, z, 1.f);
+                            Eigen::Vector3d worldPoint = m * camPoint;
+
+
+
+
+                            point.x=worldPoint[0];
+                            point.y=worldPoint[1];
+                            point.z=worldPoint[2];
+                            source_cloud->push_back(point);
+
+
+                            if (_pclSetting->isSavePCL && pclFile.is_open())
+                            {
+                                _pclSetting->isWritePCL = true;
+
+                                pclFile << worldPoint[0] << " " << worldPoint[1] << " " << worldPoint[2] << "\n";
+
+//                                printf("[%d] Point Cloud Coordinate> X: %.2f, Y: %.2f, Z: %.2f\n",
+//                                       _pclSetting->numPCL,
+//                                         worldPoint[0],
+//                                         worldPoint[1],
+//                                         worldPoint[2]);
+
+                                _pclSetting->numPCL++;
+                                _pclSetting->isWritePCL = false;
+                            }
+
+                        }
+                    }
+                }
+            }
 
         }
 

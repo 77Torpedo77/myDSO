@@ -69,7 +69,8 @@ public:
 
 	// ==================== Output3DWrapper Functionality ======================
     virtual void publishGraph(const std::map<uint64_t, Eigen::Vector2i, std::less<uint64_t>, Eigen::aligned_allocator<std::pair<const uint64_t, Eigen::Vector2i>>> &connectivity) override;
-    virtual void publishKeyframes( std::vector<FrameHessian*> &frames, bool final, CalibHessian* HCalib) override;
+    virtual void
+    publishKeyframes(std::vector<FrameHessian *> &frames, bool final, CalibHessian *HCalib, int mode) override;
     virtual void publishCamPose(FrameShell* frame, CalibHessian* HCalib) override;
 
 

@@ -853,19 +853,28 @@ void FullSystem::addActiveFrame( ImageAndExposure* image, int id )
 	{
         ///add by pyl,wait for all inited///
         bool allAreOne = std::all_of(init_flag.begin(), init_flag.end(), [](int i) { return i == 1; });
-        printf("------------%d------%d-------\n",_pclSetting->view_num_index,allAreOne);
-        if (!allAreOne && init_flag[_pclSetting->view_num_index]==1 && point_match_flag==0){
-            if (point_match_flag==0){
-                std::unique_lock<std::mutex> lck(mtx);
-                //init_flag[_pclSetting->view_num_index] = 1;  do it in makeKeyFrame
-                printf("%d is inited",_pclSetting->view_num_index);
-                while (point_match_flag==0)
-                    init_cv.wait(lck);
+        //printf("------------%d------%d-------\n",_pclSetting->view_num_index,init_flag[_pclSetting->view_num_index]==1);
+        std::cout<<"-----"<<_pclSetting->view_num_index<<"--------"<<init_flag[_pclSetting->view_num_index]<<std::endl;
+        int i=1;
+        //if (!allAreOne && init_flag[_pclSetting->view_num_index]==1 && point_match_flag==0){
+        if (init_flag[_pclSetting->view_num_index]==1){
+            //printf("inter if");
+            std::cout<<"inter if"<<std::endl;
+            std::unique_lock<std::mutex> lck(mtx,std::try_to_lock);
+            //printf("+++++++%d++++lock++++",lck.owns_lock());
+            //init_flag[_pclSetting->view_num_index] = 1;  do it in makeKeyFrame
+            //printf("%d is inited",_pclSetting->view_num_index);
+            std::cout<<_pclSetting->view_num_index<<"is inited"<<std::endl;
+            while (init_flag[_pclSetting->view_num_index]==1 && point_match_flag==0){
                 lck.unlock();
-                boost::this_thread::sleep_for(boost::chrono::seconds(5));
+                init_cv.wait(lck);
             }
 
+            lck.unlock();
+            //boost::this_thread::sleep_for(boost::chrono::seconds(5));
         }
+
+        //}
 
 
 		// =========================== SWAP tracking reference?. =========================
@@ -1140,7 +1149,8 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
 			initFailed=true;
 		}
 	}
-    else{
+    else
+    {
         init_flag[_pclSetting->view_num_index] = 1;
     }
 
@@ -1198,7 +1208,10 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
     for(IOWrap::Output3DWrapper* ow : outputWrapper)
     {
         ow->publishGraph(ef->connectivityMap);
-        ow->publishKeyframes(frameHessians, false, &Hcalib);
+        if (init_flag[_pclSetting->view_num_index] == 1 && point_match_flag==0)
+            ow->publishKeyframes(frameHessians, false, &Hcalib, 1);
+        else
+            ow->publishKeyframes(frameHessians, false, &Hcalib, 0);
     }
 
 
