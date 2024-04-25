@@ -232,6 +232,7 @@ extern std::vector<int> init_flag;
 extern int view_num;
 extern std::mutex mtx;
 extern std::condition_variable init_cv;
+extern bool point_match_flag;
 
 
 

@@ -90,7 +90,8 @@ void PangolinDSOViewer::run()
     std::cout<<thread_id_str+"//////////////////pango_run///////////////////"<<std::endl;
     //std::cout << timestamp_str << std::endl;
 
-    pangolin::CreateWindowAndBind(boost::to_string(boost::this_thread::get_id()),2*w,2*h);
+   // pangolin::CreateWindowAndBind(boost::to_string(boost::this_thread::get_id()),2*w,2*h);
+    pangolin::CreateWindowAndBind(boost::to_string(_pclSetting->view_num_index),2*w,2*h);
 	const int UI_WIDTH = 180;
 
 	glEnable(GL_DEPTH_TEST);

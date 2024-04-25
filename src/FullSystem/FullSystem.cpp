@@ -853,9 +853,19 @@ void FullSystem::addActiveFrame( ImageAndExposure* image, int id )
 	{
         ///add by pyl,wait for all inited///
         bool allAreOne = std::all_of(init_flag.begin(), init_flag.end(), [](int i) { return i == 1; });
-        while (1)
-            printf("-----------%d",allAreOne);
+        printf("------------%d------%d-------\n",_pclSetting->view_num_index,allAreOne);
+        if (!allAreOne && init_flag[_pclSetting->view_num_index]==1 && point_match_flag==0){
+            if (point_match_flag==0){
+                std::unique_lock<std::mutex> lck(mtx);
+                //init_flag[_pclSetting->view_num_index] = 1;  do it in makeKeyFrame
+                printf("%d is inited",_pclSetting->view_num_index);
+                while (point_match_flag==0)
+                    init_cv.wait(lck);
+                lck.unlock();
+                boost::this_thread::sleep_for(boost::chrono::seconds(5));
+            }
 
+        }
 
 
 		// =========================== SWAP tracking reference?. =========================
@@ -1130,6 +1140,9 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
 			initFailed=true;
 		}
 	}
+    else{
+        init_flag[_pclSetting->view_num_index] = 1;
+    }
 
 
 

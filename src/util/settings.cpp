@@ -235,6 +235,7 @@ int view_num= 3;
 std::vector<int> init_flag(view_num,0);
 std::mutex mtx;
 std::condition_variable init_cv;
+bool point_match_flag=0;
 
 void handleKey(char k)
 {

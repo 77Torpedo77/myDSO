@@ -665,16 +665,19 @@ int main( int argc, char** argv )
     int lstart3 = lstart; int linc3 = linc; int lend3 = lend;
     // to make MacOS happy: run this in dedicated thread -- and use this one to run the GUI.
     std::thread runthread2([&]() {
-        test(lstart, reader, linc, lend,1);
+        test(lstart, reader, linc, lend,0);
     });
     //runthread2.join();
     //int lstart2 = lstart; int linc2 = linc; int lend2 = lend;
     std::thread runthread3([&]() {
-        test(lstart2, reader2, linc2, lend2,2);
+        test(lstart2, reader2, linc2, lend2,1);
     });
     std::thread runthread4([&]() {
-        test(lstart3, reader3, linc3, lend3,3);
+        test(lstart3, reader3, linc3, lend3,2);
     });
+
+
+
     //std::thread::id mainThreadId = std::this_thread::get_id();
 //    if(viewer != 0){
 //        //viewer->run();
