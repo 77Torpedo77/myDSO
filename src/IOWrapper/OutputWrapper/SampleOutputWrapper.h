@@ -35,8 +35,8 @@
 
 #include "util/pclSetting.h"
 
-#include <pcl/point_types.h>
-#include <pcl/registration/icp.h>
+//#include <pcl/point_types.h>
+//#include <pcl/registration/icp.h>
 namespace dso
 {
 
@@ -171,9 +171,9 @@ public:
             }
             if (mode==1)
             {
-                pcl::PointCloud<pcl::PointXYZ>::Ptr source_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-                pcl::PointCloud<pcl::PointXYZ>::Ptr target_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-                pcl::PointXYZ point;
+                int point_num=0;
+                //pcl::PointCloud<pcl::PointXYZ>::Ptr new_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+                //pcl::PointXYZ point;
                 for (FrameHessian* f : frames)
                 {
                     if (f->shell->poseValid)
@@ -185,6 +185,7 @@ public:
 
                         for (auto const* p : points)
                         {
+                            point_num++;
                             float depth = 1.0f / p->idepth;
                             auto const x = (p->u * fxi + cxi) * depth;
                             auto const y = (p->v * fyi + cyi) * depth;
@@ -193,34 +194,16 @@ public:
                             Eigen::Vector4d camPoint(x, y, z, 1.f);
                             Eigen::Vector3d worldPoint = m * camPoint;
 
-
-
-
-                            point.x=worldPoint[0];
-                            point.y=worldPoint[1];
-                            point.z=worldPoint[2];
-                            source_cloud->push_back(point);
-
-
-                            if (_pclSetting->isSavePCL && pclFile.is_open())
-                            {
-                                _pclSetting->isWritePCL = true;
-
-                                pclFile << worldPoint[0] << " " << worldPoint[1] << " " << worldPoint[2] << "\n";
-
-//                                printf("[%d] Point Cloud Coordinate> X: %.2f, Y: %.2f, Z: %.2f\n",
-//                                       _pclSetting->numPCL,
-//                                         worldPoint[0],
-//                                         worldPoint[1],
-//                                         worldPoint[2]);
-
-                                _pclSetting->numPCL++;
-                                _pclSetting->isWritePCL = false;
-                            }
-
+                            //point.x=worldPoint[0];
+                            //point.y=worldPoint[1];
+                            //point.z=worldPoint[2];
+                            //new_cloud->push_back(point);
+                            std::cout << worldPoint[0] << " " << worldPoint[1] << " " << worldPoint[2] << std::endl;
                         }
                     }
                 }
+                //cloud_vector.insert(cloud_vector.begin()+_pclSetting->view_num_index,new_cloud);
+                std::cout<<"add cloud:"<<_pclSetting->view_num_index<<",have points:"<<point_num<<std::endl;
             }
 
         }

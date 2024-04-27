@@ -3,7 +3,8 @@ SET(PROJECT_NAME DSO)
 PROJECT(${PROJECT_NAME})
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 #set(CMAKE_VERBOSE_MAKEFILE ON)
-
+#find_package(VTK REQUIRED)
+#include(${VTK_USE_FILE})
 set(Boost_DEBUG ON)
 set(BOOST_ROOT /home/ubuntu64/myProject/depd/boost_1_77_0)
 set(BOOST_INCLUDEDIR /home/ubuntu64/myProject/depd/boost_1_77_0)
@@ -17,12 +18,18 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # required libraries
 find_package(SuiteParse REQUIRED)
+#set(EIGEN_INCLUDE_DIR /usr/include/eigen3)
 find_package(Eigen3 REQUIRED)
 find_package(Boost COMPONENTS system thread)
-find_package(PCL 1.9.1 REQUIRED)
+
+
+#find_package(PCL 1.9.1 REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
+#link_directories(${PCL_LIBRARY_DIRS})
+#add_definitions(${PCL_DEFINITIONS})
+
+#find_package(VTK REQUIRED)
+#include(${VTK_USE_FILE})
 
 # optional libraries
 find_package(LibZip QUIET)

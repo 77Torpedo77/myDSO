@@ -541,7 +541,7 @@ void
 PangolinDSOViewer::publishKeyframes(std::vector<FrameHessian *> &frames, bool final, CalibHessian *HCalib, int mode)
 {
     //std::string thread_id_str = boost::to_string(boost::this_thread::get_id());
-    //std::cout<<thread_id_str+"//////////////////pango_public///////////////////"<<std::endl;
+    //std::cout<<thread_id_str+"///////////////////pango_public///////////////////"<<std::endl;
 	if(!setting_render_display3D) return;
     if(disableAllDisplay) return;
 

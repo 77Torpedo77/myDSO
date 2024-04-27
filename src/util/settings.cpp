@@ -24,7 +24,6 @@
 
 
 #include "util/settings.h"
-#include <boost/bind.hpp>
 #include <condition_variable>
 //#include <boost/exception/to_string.hpp>
 //#include <boost/thread/detail/thread.hpp>
@@ -231,11 +230,12 @@ int sparsityFactor = 5;	// not actually a setting, only some legacy stuff for co
 //    thread_local std::string strTmpFileName = "";
 //    thread_local std::string strSaveFileName = "";
 ///add by pyl
-int view_num= 2;
+int view_num= 3;
 std::vector<int> init_flag(view_num,0);
 std::mutex mtx;
 std::condition_variable init_cv;
 bool point_match_flag=false;
+//std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloud_vector;
 
 void handleKey(char k)
 {
