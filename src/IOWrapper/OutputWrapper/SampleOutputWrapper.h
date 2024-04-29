@@ -172,8 +172,8 @@ public:
             if (mode==1)
             {
                 int point_num=0;
-                //pcl::PointCloud<pcl::PointXYZ>::Ptr new_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-                //pcl::PointXYZ point;
+                pcl::PointCloud<pcl::PointXYZ>::Ptr new_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+                pcl::PointXYZ point;
                 for (FrameHessian* f : frames)
                 {
                     if (f->shell->poseValid)
@@ -194,15 +194,19 @@ public:
                             Eigen::Vector4d camPoint(x, y, z, 1.f);
                             Eigen::Vector3d worldPoint = m * camPoint;
 
-                            //point.x=worldPoint[0];
-                            //point.y=worldPoint[1];
-                            //point.z=worldPoint[2];
-                            //new_cloud->push_back(point);
+                            point.x=worldPoint[0];
+                            point.y=worldPoint[1];
+                            point.z=worldPoint[2];
+                            new_cloud->push_back(point);
                             std::cout << worldPoint[0] << " " << worldPoint[1] << " " << worldPoint[2] << std::endl;
                         }
                     }
                 }
+                std::unique_lock<std::mutex> cloud_lck(cloud_mtx);
                 //cloud_vector.insert(cloud_vector.begin()+_pclSetting->view_num_index,new_cloud);
+                //cloud_vector.push_back(new_cloud);
+                cloud_vector[_pclSetting->view_num_index]=new_cloud;
+                cloud_lck.unlock();
                 std::cout<<"add cloud:"<<_pclSetting->view_num_index<<",have points:"<<point_num<<std::endl;
             }
 

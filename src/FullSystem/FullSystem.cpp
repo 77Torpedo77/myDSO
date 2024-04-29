@@ -1209,7 +1209,7 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
     {
         ow->publishGraph(ef->connectivityMap);
         if (init_flag[_pclSetting->view_num_index] == 1 && point_match_flag==0)
-            ow->publishKeyframes(frameHessians, false, &Hcalib, 0);
+            ow->publishKeyframes(frameHessians, false, &Hcalib, 1);
         else
             ow->publishKeyframes(frameHessians, false, &Hcalib, 0);
     }

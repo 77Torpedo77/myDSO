@@ -31,9 +31,9 @@
 #include <mutex>
 #include <condition_variable>
 #include "vector"
-//#include <util/pclSetting.h>
-//#include <pcl/point_types.h>
-//#include <pcl/registration/icp.h>
+#include <util/pclSetting.h>
+#include <pcl/point_types.h>
+#include <pcl/registration/icp.h>
 
 namespace dso
 {
@@ -235,7 +235,8 @@ extern int view_num;
 extern std::mutex mtx;
 extern std::condition_variable init_cv;
 extern bool point_match_flag;
-//extern std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloud_vector;
+extern std::mutex cloud_mtx;
+extern std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloud_vector;
 
 
 

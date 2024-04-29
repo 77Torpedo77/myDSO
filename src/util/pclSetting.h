@@ -5,7 +5,7 @@
 #include <string>
 #include <boost/exception/to_string.hpp>
 #include <iostream>
-
+#include "boost/thread.hpp"
 #ifndef DSO_MUTITHREADSETTING_H
 #define DSO_MUTITHREADSETTING_H
 

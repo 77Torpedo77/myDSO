@@ -235,7 +235,8 @@ std::vector<int> init_flag(view_num,0);
 std::mutex mtx;
 std::condition_variable init_cv;
 bool point_match_flag=false;
-//std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloud_vector;
+std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloud_vector(view_num);
+std::mutex cloud_mtx;
 
 void handleKey(char k)
 {
