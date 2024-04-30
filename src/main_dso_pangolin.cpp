@@ -677,6 +677,39 @@ int main( int argc, char** argv )
     });
 
 
+    pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+    // icp.setMaxCorrespondenceDistance(0.05); // Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
+    icp.setTransformationEpsilon(
+            1e-8); // 前一个变换矩阵和当前变换矩阵的差异小于阈值时，就认为已经收敛了，是一条收敛条件；// Set the transformation epsilon (criterion 2)
+    icp.setEuclideanFitnessEpsilon(
+            1); // 还有一条收敛条件是均方误差和小于阈值，停止迭代。// Set the euclidean distance difference epsilon (criterion 3)
+    icp.setMaximumIterations(50); // Set the maximum number of iterations (criterion 1)
+
+    pcl::PointCloud<pcl::PointXYZ> final_cloud; // 存储结果
+    pcl::PointCloud<pcl::PointXYZ> temp_cloud;
+
+
+
+    while (point_match_flag==0){
+        if(std::all_of(init_flag.begin(), init_flag.end(), [](int i) { return i == 1; })){
+            for (int i = 1; i < view_num; i++) {
+                icp.setInputSource(cloud_vector[i]); // 设置输入点云
+                icp.setInputTarget(cloud_vector[0]); // 设置目标点云（输入点云进行仿射变换，得到目标点云）
+                icp.align(temp_cloud); // 进行配准，结果存储在Final中
+                if (icp.hasConverged()){
+                    std::cout << "score: " << icp.getFitnessScore() << std::endl;
+                    std::cout << "result transformation:\n" << icp.getFinalTransformation() << std::endl;
+                    //final_cloud += temp_cloud;
+                }
+            }
+            point_match_flag=1;
+            init_cv.notify_all();
+            //break;
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+    }
+    std::cout<<"end main while"<<std::endl;
+
 
     //std::thread::id mainThreadId = std::this_thread::get_id();
 //    if(viewer != 0){

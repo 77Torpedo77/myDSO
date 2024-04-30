@@ -869,8 +869,18 @@ void FullSystem::addActiveFrame( ImageAndExposure* image, int id )
                 lck.unlock();
                 init_cv.wait(lck);
             }
+            // 尝试锁定 mutex
+            if (mtx.try_lock()) {
+                // 如果 try_lock 返回 true，说明锁当前是可用的，没有被锁定
+                // 这通常不会发生，因为我们刚刚锁定了它
+                std::cout << "Lock is not locked." << std::endl;
+                lck.unlock(); // 解锁
+            } else {
+                // 如果 try_lock 返回 false，说明锁已经被锁定
+                std::cout << "Lock is locked." << std::endl;
+                lck.unlock(); // 解锁
+            }
 
-            lck.unlock();
             //boost::this_thread::sleep_for(boost::chrono::seconds(5));
         }
 
