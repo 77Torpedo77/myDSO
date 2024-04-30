@@ -52,7 +52,7 @@
 #include "IOWrapper/OutputWrapper/SampleOutputWrapper.h"
 
 #include <condition_variable>
-
+#include <pcl/io/pcd_io.h>
 
 std::string vignette = "";
 std::string gammaCalib = "";
@@ -685,13 +685,14 @@ int main( int argc, char** argv )
             1); // 还有一条收敛条件是均方误差和小于阈值，停止迭代。// Set the euclidean distance difference epsilon (criterion 3)
     icp.setMaximumIterations(50); // Set the maximum number of iterations (criterion 1)
 
-    pcl::PointCloud<pcl::PointXYZ> final_cloud; // 存储结果
+    pcl::PointCloud<pcl::PointXYZ> final_cloud ; // 存储结果
     pcl::PointCloud<pcl::PointXYZ> temp_cloud;
 
 
 
     while (point_match_flag==0){
         if(std::all_of(init_flag.begin(), init_flag.end(), [](int i) { return i == 1; })){
+            final_cloud = *cloud_vector[0];
             for (int i = 1; i < view_num; i++) {
                 icp.setInputSource(cloud_vector[i]); // 设置输入点云
                 icp.setInputTarget(cloud_vector[0]); // 设置目标点云（输入点云进行仿射变换，得到目标点云）
@@ -699,15 +700,18 @@ int main( int argc, char** argv )
                 if (icp.hasConverged()){
                     std::cout << "score: " << icp.getFitnessScore() << std::endl;
                     std::cout << "result transformation:\n" << icp.getFinalTransformation() << std::endl;
-                    //final_cloud += temp_cloud;
+                    //pcl::transformPointCloud(temp_cloud, temp_cloud, icp.getFinalTransformation());
+                    final_cloud += temp_cloud;
+                    temp_cloud.clear();
                 }
             }
             point_match_flag=1;
-            init_cv.notify_all();
+            //init_cv.notify_all();
             //break;
         }
         std::this_thread::sleep_for(std::chrono::seconds(3));
     }
+    pcl::io::savePCDFileASCII("final.pcd", final_cloud);
     std::cout<<"end main while"<<std::endl;
 
 

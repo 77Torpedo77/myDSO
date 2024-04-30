@@ -1159,7 +1159,7 @@ void FullSystem::makeKeyFrame( FrameHessian* fh)
 			initFailed=true;
 		}
 	}
-    else
+    else if (allKeyFramesHistory.size() >= 100)
     {
         init_flag[_pclSetting->view_num_index] = 1;
     }

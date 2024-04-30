@@ -198,7 +198,26 @@ public:
                             point.y=worldPoint[1];
                             point.z=worldPoint[2];
                             new_cloud->push_back(point);
-                            std::cout << worldPoint[0] << " " << worldPoint[1] << " " << worldPoint[2] << std::endl;
+                            //std::cout << worldPoint[0] << " " << worldPoint[1] << " " << worldPoint[2] << std::endl;
+                        }
+                        auto const& act_points = f->pointHessians;
+
+                        for (auto const* p : act_points)
+                        {
+                            point_num++;
+                            float depth = 1.0f / p->idepth;
+                            auto const x = (p->u * fxi + cxi) * depth;
+                            auto const y = (p->v * fyi + cyi) * depth;
+                            auto const z = depth * (1 + 2 * fxi);
+
+                            Eigen::Vector4d camPoint(x, y, z, 1.f);
+                            Eigen::Vector3d worldPoint = m * camPoint;
+
+                            point.x=worldPoint[0];
+                            point.y=worldPoint[1];
+                            point.z=worldPoint[2];
+                            new_cloud->push_back(point);
+                            //std::cout << worldPoint[0] << " " << worldPoint[1] << " " << worldPoint[2] << std::endl;
                         }
                     }
                 }
